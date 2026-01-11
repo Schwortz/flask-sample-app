@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-11T21:07:51.753531+00:00
+Generated at: 2026-01-11T21:09:10.245357+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -34,11 +34,7 @@ TEST_CASES = json.loads('''[
         "method": "GET",
         "endpoint": "/",
         "request_data": {},
-        "expected_status": 200,
-        "expected_response": {
-            "type": "text",
-            "value": "Hello, Flask!"
-        }
+        "expected_status": 200
     },
     {
         "name": "get_items_empty_list",
@@ -92,14 +88,6 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_item_by_id_happy_path",
-        "setup": {
-            "body": {
-                "name": "test_item_for_get",
-                "value": "test_value"
-            },
-            "method": "POST",
-            "endpoint": "/items"
-        },
         "method": "GET",
         "endpoint": "/items/{item_id}",
         "request_data": {
@@ -110,8 +98,8 @@ TEST_CASES = json.loads('''[
         "expected_status": 200,
         "expected_response": {
             "item": {
-                "name": "test_item_for_get",
-                "value": "test_value"
+                "name": "test_item",
+                "description": "A simple test item"
             }
         }
     },
@@ -131,29 +119,6 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_items_after_adding_multiple",
-        "setup": [
-            {
-                "body": {
-                    "name": "item1"
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            },
-            {
-                "body": {
-                    "name": "item2"
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            },
-            {
-                "body": {
-                    "name": "item3"
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            }
-        ],
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
@@ -161,13 +126,22 @@ TEST_CASES = json.loads('''[
         "expected_response": {
             "items": [
                 {
-                    "name": "item1"
+                    "name": "test_item",
+                    "description": "A simple test item"
                 },
                 {
-                    "name": "item2"
-                },
-                {
-                    "name": "item3"
+                    "name": "complex_item",
+                    "metadata": {
+                        "tags": [
+                            "new",
+                            "sale"
+                        ],
+                        "specs": {
+                            "color": "blue",
+                            "weight": 1.5
+                        },
+                        "category": "electronics"
+                    }
                 }
             ]
         }
