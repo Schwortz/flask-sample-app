@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-11T21:01:54.440288+00:00
+Generated at: 2026-01-11T21:07:51.753531+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -31,153 +31,146 @@ import requests
 TEST_CASES = json.loads('''[
     {
         "name": "get_welcome_message",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
         "endpoint": "/",
-        "description": "Verify the welcome endpoint returns the correct greeting message",
-        "request_data": {
-            "body": null,
-            "path": {},
-            "query": {}
-        },
-        "expected_status": 200
+        "request_data": {},
+        "expected_status": 200,
+        "expected_response": {
+            "type": "text",
+            "value": "Hello, Flask!"
+        }
     },
     {
         "name": "get_items_empty_list",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
         "endpoint": "/items",
-        "description": "Retrieve all items from an empty collection",
-        "request_data": {
-            "body": null,
-            "path": {},
-            "query": {}
-        },
-        "expected_status": 200
+        "request_data": {},
+        "expected_status": 200,
+        "expected_response": {
+            "items": []
+        }
     },
     {
         "name": "add_item_simple_payload",
-        "setup": null,
         "method": "POST",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
         "endpoint": "/items",
-        "description": "Add a new item with a simple JSON payload",
         "request_data": {
             "body": {
-                "name": "Test Item",
-                "price": 19.99,
+                "name": "test_item",
                 "description": "A simple test item"
-            },
-            "path": {},
-            "query": {}
+            }
         },
-        "expected_status": 201
+        "expected_status": 201,
+        "expected_response": {
+            "message": "Item added successfully"
+        }
     },
     {
         "name": "add_item_complex_nested_payload",
-        "setup": null,
         "method": "POST",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
         "endpoint": "/items",
-        "description": "Add a new item with a complex nested JSON payload",
         "request_data": {
             "body": {
-                "tags": [
-                    "electronics",
-                    "new",
-                    "featured"
-                ],
-                "inStock": true,
-                "product": {
-                    "name": "Complex Product",
-                    "category": "Electronics",
-                    "specifications": {
-                        "weight": 1.5,
-                        "dimensions": {
-                            "depth": 5,
-                            "width": 10,
-                            "height": 20
-                        }
-                    }
-                },
-                "quantity": 100
-            },
-            "path": {},
-            "query": {}
+                "name": "complex_item",
+                "metadata": {
+                    "tags": [
+                        "new",
+                        "sale"
+                    ],
+                    "specs": {
+                        "color": "blue",
+                        "weight": 1.5
+                    },
+                    "category": "electronics"
+                }
+            }
         },
-        "expected_status": 201
+        "expected_status": 201,
+        "expected_response": {
+            "message": "Item added successfully"
+        }
     },
     {
         "name": "get_item_by_id_happy_path",
         "setup": {
             "body": {
-                "name": "Retrievable Item",
-                "price": 25.5,
-                "description": "Item for GET test"
+                "name": "test_item_for_get",
+                "value": "test_value"
             },
             "method": "POST",
-            "endpoint": "/items",
-            "extract_id_from": "id"
+            "endpoint": "/items"
         },
         "method": "GET",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
-        "endpoint": "/items/{id}",
-        "description": "Create an item, retrieve it by ID, then verify cleanup",
+        "endpoint": "/items/{item_id}",
         "request_data": {
-            "body": null,
             "path": {
-                "id": "$setup_id"
-            },
-            "query": {}
+                "item_id": 0
+            }
         },
-        "expected_status": 200
+        "expected_status": 200,
+        "expected_response": {
+            "item": {
+                "name": "test_item_for_get",
+                "value": "test_value"
+            }
+        }
     },
     {
         "name": "get_item_not_found",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
-        "category": "NOT_FOUND",
-        "endpoint": "/items/{id}",
-        "description": "Attempt to retrieve an item with a non-existent ID",
+        "endpoint": "/items/{item_id}",
         "request_data": {
-            "body": null,
             "path": {
-                "id": 99999
-            },
-            "query": {}
+                "item_id": 9999
+            }
         },
-        "expected_status": 404
+        "expected_status": 404,
+        "expected_response": {
+            "error": "Item not found"
+        }
     },
     {
         "name": "get_items_after_adding_multiple",
-        "setup": {
-            "body": {
-                "name": "First Item",
-                "value": 100
+        "setup": [
+            {
+                "body": {
+                    "name": "item1"
+                },
+                "method": "POST",
+                "endpoint": "/items"
             },
-            "method": "POST",
-            "endpoint": "/items",
-            "extract_id_from": "id"
-        },
+            {
+                "body": {
+                    "name": "item2"
+                },
+                "method": "POST",
+                "endpoint": "/items"
+            },
+            {
+                "body": {
+                    "name": "item3"
+                },
+                "method": "POST",
+                "endpoint": "/items"
+            }
+        ],
         "method": "GET",
-        "cleanup": null,
-        "category": "HAPPY_PATH",
         "endpoint": "/items",
-        "description": "Verify that GET /items returns all added items",
-        "request_data": {
-            "body": null,
-            "path": {},
-            "query": {}
-        },
-        "expected_status": 200
+        "request_data": {},
+        "expected_status": 200,
+        "expected_response": {
+            "items": [
+                {
+                    "name": "item1"
+                },
+                {
+                    "name": "item2"
+                },
+                {
+                    "name": "item3"
+                }
+            ]
+        }
     }
 ]''')
 
@@ -186,9 +179,9 @@ STATIC_AUTH_HEADERS = json.loads('''{}''')
 STATIC_AUTH_COOKIES = json.loads('''{}''')
 
 # Full health check URL (same as healthcheck_command uses)
-HEALTH_CHECK_URL = ""
+HEALTH_CHECK_URL = "http://localhost:5444/"
 # Base URL for API requests (from app discovery, includes host:port)
-BASE_URL = ""
+BASE_URL = "http://localhost:5444"
 # Response validation mode: when True, validates response body against expected_response
 # This is automatically detected based on presence of expected_response in test cases
 VALIDATE_RESPONSE_BODY = any(
