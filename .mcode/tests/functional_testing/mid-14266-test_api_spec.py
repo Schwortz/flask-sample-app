@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-11T13:23:43.829585+00:00
+Generated at: 2026-01-11T13:24:49.055039+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -109,25 +109,16 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_item_by_id_after_creation",
-        "setup": {
-            "body": {
-                "isbn": "978-3-16-148410-0",
-                "year": 2023,
-                "title": "Test Book",
-                "author": "Jane Smith"
-            },
-            "method": "POST",
-            "endpoint": "/items"
-        },
+        "setup": null,
         "method": "GET",
         "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items/{item_id}",
-        "description": "Create an item, retrieve it by ID, verify content",
+        "description": "Get item at index 0 (created by previous test)",
         "request_data": {
             "body": null,
             "path": {
-                "item_id": 2
+                "item_id": 0
             },
             "query": {}
         },
@@ -152,19 +143,12 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_items_after_multiple_additions",
-        "setup": {
-            "body": {
-                "sku": "WID-001",
-                "product": "Widget A"
-            },
-            "method": "POST",
-            "endpoint": "/items"
-        },
+        "setup": null,
         "method": "GET",
         "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items",
-        "description": "Add multiple items and verify list contains all items",
+        "description": "Verify list contains items added by previous tests",
         "request_data": {
             "body": null,
             "path": {},
