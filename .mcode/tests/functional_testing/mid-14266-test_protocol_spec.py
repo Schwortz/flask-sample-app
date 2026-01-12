@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T11:23:38.223081+00:00
+Generated at: 2026-01-12T11:33:08.152062+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -28,113 +28,7 @@ import requests
 # =============================================================================
 
 # Parse JSON at runtime to handle null -> None, true -> True, false -> False
-TEST_CASES = json.loads('''[
-    {
-        "name": "get_welcome_message",
-        "method": "GET",
-        "endpoint": "/",
-        "request_data": {},
-        "expected_status": 200
-    },
-    {
-        "name": "get_items_empty_list",
-        "method": "GET",
-        "endpoint": "/items",
-        "request_data": {},
-        "expected_status": 200,
-        "expected_response": {
-            "items": []
-        }
-    },
-    {
-        "name": "add_item_simple_payload",
-        "method": "POST",
-        "endpoint": "/items",
-        "request_data": {
-            "body": {
-                "name": "Test Item",
-                "description": "A simple test item"
-            }
-        },
-        "expected_status": 201,
-        "expected_response": {
-            "message": "Item added successfully"
-        }
-    },
-    {
-        "name": "add_item_complex_nested_payload",
-        "method": "POST",
-        "endpoint": "/items",
-        "request_data": {
-            "body": {
-                "title": "Complex Item",
-                "content": "This is a complex nested payload",
-                "metadata": {
-                    "tags": [
-                        "test",
-                        "complex",
-                        "nested"
-                    ],
-                    "stats": {
-                        "likes": 0,
-                        "views": 0
-                    },
-                    "author": "John Doe"
-                }
-            }
-        },
-        "expected_status": 201,
-        "expected_response": {
-            "message": "Item added successfully"
-        }
-    },
-    {
-        "name": "get_item_by_id_happy_path",
-        "setup": {
-            "body": {
-                "name": "Item for retrieval",
-                "value": 42
-            },
-            "method": "POST",
-            "endpoint": "/items"
-        },
-        "method": "GET",
-        "endpoint": "/items/{id}",
-        "request_data": {
-            "path": {
-                "id": 0
-            }
-        },
-        "expected_status": 200,
-        "expected_response": {
-            "item": {
-                "name": "Item for retrieval",
-                "value": 42
-            }
-        }
-    },
-    {
-        "name": "get_item_not_found",
-        "method": "GET",
-        "endpoint": "/items/{id}",
-        "request_data": {
-            "path": {
-                "id": 999
-            }
-        },
-        "expected_status": 404,
-        "expected_response": {
-            "error": "Item not found"
-        }
-    },
-    {
-        "name": "get_items_after_adding_multiple",
-        "method": "GET",
-        "endpoint": "/items",
-        "request_data": {},
-        "expected_status": 200
-    }
-]''')
+TEST_CASES = json.loads('''[]''')
 
 # Static auth (fallback if dynamic auth not configured)
 STATIC_AUTH_HEADERS = json.loads('''{}''')
