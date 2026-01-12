@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T12:01:24.182507+00:00
+Generated at: 2026-01-12T12:02:48.631766+00:00
 Project: flask-sample-app
 Milestone: 14362
 """
@@ -110,25 +110,16 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_item_by_id_happy_path",
-        "setup": {
-            "body": {
-                "name": "Smartphone",
-                "brand": "TestBrand",
-                "price": 699.99
-            },
-            "method": "POST",
-            "endpoint": "/items",
-            "extract_id_from": "index"
-        },
+        "setup": null,
         "method": "GET",
         "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items/{item_id}",
-        "description": "Create an item, retrieve it by ID (index)",
+        "description": "Retrieve an item by ID (index) - relies on items created by previous tests",
         "request_data": {
             "body": null,
             "path": {
-                "item_id": "$setup_id"
+                "item_id": 0
             },
             "query": {}
         },
