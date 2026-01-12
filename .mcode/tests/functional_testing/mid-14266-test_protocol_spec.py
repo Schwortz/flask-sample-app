@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T09:39:48.392268+00:00
+Generated at: 2026-01-12T09:58:05.203146+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -183,7 +183,7 @@ STATIC_AUTH_HEADERS = json.loads('''{}''')
 STATIC_AUTH_COOKIES = json.loads('''{}''')
 
 # Base URL for API requests (from app discovery, includes host:port)
-BASE_URL = ""
+BASE_URL = "http://localhost:$PORT"
 # Full health check URL (same as healthcheck_command uses)
 HEALTH_CHECK_URL = f"{BASE_URL.rstrip('/')}"
 # Response validation mode: when True, validates response body against expected_response
