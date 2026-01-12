@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-11T21:09:10.245357+00:00
+Generated at: 2026-01-12T09:26:40.454567+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -41,6 +41,9 @@ TEST_CASES = json.loads('''[
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
+        "actual_response": {
+            "items": []
+        },
         "expected_status": 200,
         "expected_response": {
             "items": []
@@ -55,6 +58,9 @@ TEST_CASES = json.loads('''[
                 "name": "test_item",
                 "description": "A simple test item"
             }
+        },
+        "actual_response": {
+            "message": "Item added successfully"
         },
         "expected_status": 201,
         "expected_response": {
@@ -81,6 +87,9 @@ TEST_CASES = json.loads('''[
                 }
             }
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201,
         "expected_response": {
             "message": "Item added successfully"
@@ -93,6 +102,12 @@ TEST_CASES = json.loads('''[
         "request_data": {
             "path": {
                 "item_id": 0
+            }
+        },
+        "actual_response": {
+            "item": {
+                "name": "test_item",
+                "description": "A simple test item"
             }
         },
         "expected_status": 200,
@@ -112,6 +127,9 @@ TEST_CASES = json.loads('''[
                 "item_id": 9999
             }
         },
+        "actual_response": {
+            "error": "Item not found"
+        },
         "expected_status": 404,
         "expected_response": {
             "error": "Item not found"
@@ -122,6 +140,28 @@ TEST_CASES = json.loads('''[
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
+        "actual_response": {
+            "items": [
+                {
+                    "name": "test_item",
+                    "description": "A simple test item"
+                },
+                {
+                    "name": "complex_item",
+                    "metadata": {
+                        "tags": [
+                            "new",
+                            "sale"
+                        ],
+                        "specs": {
+                            "color": "blue",
+                            "weight": 1.5
+                        },
+                        "category": "electronics"
+                    }
+                }
+            ]
+        },
         "expected_status": 200,
         "expected_response": {
             "items": [
@@ -152,10 +192,10 @@ TEST_CASES = json.loads('''[
 STATIC_AUTH_HEADERS = json.loads('''{}''')
 STATIC_AUTH_COOKIES = json.loads('''{}''')
 
-# Full health check URL (same as healthcheck_command uses)
-HEALTH_CHECK_URL = "http://localhost:5444/"
 # Base URL for API requests (from app discovery, includes host:port)
-BASE_URL = "http://localhost:5444"
+BASE_URL = ""
+# Full health check URL (same as healthcheck_command uses)
+HEALTH_CHECK_URL = f"{BASE_URL.rstrip('/')}"
 # Response validation mode: when True, validates response body against expected_response
 # This is automatically detected based on presence of expected_response in test cases
 VALIDATE_RESPONSE_BODY = any(
@@ -181,8 +221,7 @@ def authenticate() -> dict[str, Any]:
 
     The implementation below is generated based on the app's authentication mechanism.
     """
-        # No authentication required
-    return {"headers": {}, "cookies": {}}
+    
 
 
 def get_auth() -> dict[str, Any]:
