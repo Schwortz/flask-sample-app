@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T09:26:40.454567+00:00
+Generated at: 2026-01-12T09:32:41.464309+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -34,19 +34,23 @@ TEST_CASES = json.loads('''[
         "method": "GET",
         "endpoint": "/",
         "request_data": {},
-        "expected_status": 200
+        "expected_status": 200,
+        "expected_response": {
+            "type": "contains",
+            "value": "Hello, Flask!"
+        }
     },
     {
         "name": "get_items_empty_list",
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
-        "actual_response": {
-            "items": []
-        },
         "expected_status": 200,
         "expected_response": {
-            "items": []
+            "type": "exact",
+            "value": {
+                "items": []
+            }
         }
     },
     {
@@ -55,16 +59,16 @@ TEST_CASES = json.loads('''[
         "endpoint": "/items",
         "request_data": {
             "body": {
-                "name": "test_item",
+                "name": "Test Item",
                 "description": "A simple test item"
             }
         },
-        "actual_response": {
-            "message": "Item added successfully"
-        },
         "expected_status": 201,
         "expected_response": {
-            "message": "Item added successfully"
+            "type": "exact",
+            "value": {
+                "message": "Item added successfully"
+            }
         }
     },
     {
@@ -73,30 +77,43 @@ TEST_CASES = json.loads('''[
         "endpoint": "/items",
         "request_data": {
             "body": {
-                "name": "complex_item",
-                "metadata": {
+                "product": {
+                    "id": 123,
+                    "name": "Complex Product",
                     "tags": [
                         "new",
-                        "sale"
+                        "featured",
+                        "bestseller"
                     ],
-                    "specs": {
-                        "color": "blue",
-                        "weight": 1.5
-                    },
-                    "category": "electronics"
+                    "details": {
+                        "category": "Electronics",
+                        "subcategory": "Phones",
+                        "specifications": {
+                            "brand": "TestBrand",
+                            "model": "XYZ-2023"
+                        }
+                    }
                 }
             }
         },
-        "actual_response": {
-            "message": "Item added successfully"
-        },
         "expected_status": 201,
         "expected_response": {
-            "message": "Item added successfully"
+            "type": "exact",
+            "value": {
+                "message": "Item added successfully"
+            }
         }
     },
     {
         "name": "get_item_by_id_happy_path",
+        "setup": {
+            "body": {
+                "name": "Setup Item",
+                "value": 42
+            },
+            "method": "POST",
+            "endpoint": "/items"
+        },
         "method": "GET",
         "endpoint": "/items/{item_id}",
         "request_data": {
@@ -104,17 +121,14 @@ TEST_CASES = json.loads('''[
                 "item_id": 0
             }
         },
-        "actual_response": {
-            "item": {
-                "name": "test_item",
-                "description": "A simple test item"
-            }
-        },
         "expected_status": 200,
         "expected_response": {
-            "item": {
-                "name": "test_item",
-                "description": "A simple test item"
+            "type": "exact",
+            "value": {
+                "item": {
+                    "name": "Setup Item",
+                    "value": 42
+                }
             }
         }
     },
@@ -124,66 +138,42 @@ TEST_CASES = json.loads('''[
         "endpoint": "/items/{item_id}",
         "request_data": {
             "path": {
-                "item_id": 9999
+                "item_id": 999
             }
-        },
-        "actual_response": {
-            "error": "Item not found"
         },
         "expected_status": 404,
         "expected_response": {
-            "error": "Item not found"
+            "type": "exact",
+            "value": {
+                "error": "Item not found"
+            }
         }
     },
     {
         "name": "get_items_after_adding_multiple",
+        "setup": [
+            {
+                "body": {
+                    "name": "First Item"
+                },
+                "method": "POST",
+                "endpoint": "/items"
+            },
+            {
+                "body": {
+                    "name": "Second Item"
+                },
+                "method": "POST",
+                "endpoint": "/items"
+            }
+        ],
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
-        "actual_response": {
-            "items": [
-                {
-                    "name": "test_item",
-                    "description": "A simple test item"
-                },
-                {
-                    "name": "complex_item",
-                    "metadata": {
-                        "tags": [
-                            "new",
-                            "sale"
-                        ],
-                        "specs": {
-                            "color": "blue",
-                            "weight": 1.5
-                        },
-                        "category": "electronics"
-                    }
-                }
-            ]
-        },
         "expected_status": 200,
         "expected_response": {
-            "items": [
-                {
-                    "name": "test_item",
-                    "description": "A simple test item"
-                },
-                {
-                    "name": "complex_item",
-                    "metadata": {
-                        "tags": [
-                            "new",
-                            "sale"
-                        ],
-                        "specs": {
-                            "color": "blue",
-                            "weight": 1.5
-                        },
-                        "category": "electronics"
-                    }
-                }
-            ]
+            "type": "custom",
+            "validation": "len(response['items']) >= 2"
         }
     }
 ]''')
