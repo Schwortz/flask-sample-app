@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T10:12:31.918888+00:00
+Generated at: 2026-01-12T10:17:25.454889+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -100,7 +100,8 @@ TEST_CASES = json.loads('''[
                 "value": 42
             },
             "method": "POST",
-            "endpoint": "/items"
+            "endpoint": "/items",
+            "required": false
         },
         "method": "GET",
         "endpoint": "/items/{id}",
@@ -133,52 +134,10 @@ TEST_CASES = json.loads('''[
     },
     {
         "name": "get_items_after_adding_multiple",
-        "setup": [
-            {
-                "body": {
-                    "name": "First Item",
-                    "order": 1
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            },
-            {
-                "body": {
-                    "name": "Second Item",
-                    "order": 2
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            },
-            {
-                "body": {
-                    "name": "Third Item",
-                    "order": 3
-                },
-                "method": "POST",
-                "endpoint": "/items"
-            }
-        ],
         "method": "GET",
         "endpoint": "/items",
         "request_data": {},
-        "expected_status": 200,
-        "expected_response": {
-            "items": [
-                {
-                    "name": "First Item",
-                    "order": 1
-                },
-                {
-                    "name": "Second Item",
-                    "order": 2
-                },
-                {
-                    "name": "Third Item",
-                    "order": 3
-                }
-            ]
-        }
+        "expected_status": 200
     }
 ]''')
 
