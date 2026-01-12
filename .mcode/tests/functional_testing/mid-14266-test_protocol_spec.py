@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T09:58:05.203146+00:00
+Generated at: 2026-01-12T10:01:56.491644+00:00
 Project: flask-sample-app
 Milestone: 14266
 """
@@ -36,7 +36,7 @@ TEST_CASES = json.loads('''[
         "request_data": {},
         "expected_status": 200,
         "expected_response": {
-            "type": "contains",
+            "type": "text",
             "value": "Hello, Flask!"
         }
     },
@@ -47,10 +47,7 @@ TEST_CASES = json.loads('''[
         "request_data": {},
         "expected_status": 200,
         "expected_response": {
-            "type": "exact",
-            "value": {
-                "items": []
-            }
+            "items": []
         }
     },
     {
@@ -65,10 +62,7 @@ TEST_CASES = json.loads('''[
         },
         "expected_status": 201,
         "expected_response": {
-            "type": "exact",
-            "value": {
-                "message": "Item added successfully"
-            }
+            "message": "Item added successfully"
         }
     },
     {
@@ -77,76 +71,64 @@ TEST_CASES = json.loads('''[
         "endpoint": "/items",
         "request_data": {
             "body": {
-                "product": {
-                    "id": 123,
-                    "name": "Complex Product",
+                "title": "Complex Item",
+                "content": "This is a complex nested payload",
+                "metadata": {
                     "tags": [
-                        "new",
-                        "featured",
-                        "bestseller"
+                        "test",
+                        "complex",
+                        "nested"
                     ],
-                    "details": {
-                        "category": "Electronics",
-                        "subcategory": "Phones",
-                        "specifications": {
-                            "brand": "TestBrand",
-                            "model": "XYZ-2023"
-                        }
-                    }
+                    "stats": {
+                        "likes": 0,
+                        "views": 0
+                    },
+                    "author": "John Doe"
                 }
             }
         },
         "expected_status": 201,
         "expected_response": {
-            "type": "exact",
-            "value": {
-                "message": "Item added successfully"
-            }
+            "message": "Item added successfully"
         }
     },
     {
         "name": "get_item_by_id_happy_path",
         "setup": {
             "body": {
-                "name": "Setup Item",
+                "name": "Item for retrieval",
                 "value": 42
             },
             "method": "POST",
             "endpoint": "/items"
         },
         "method": "GET",
-        "endpoint": "/items/{item_id}",
+        "endpoint": "/items/{id}",
         "request_data": {
             "path": {
-                "item_id": 0
+                "id": 0
             }
         },
         "expected_status": 200,
         "expected_response": {
-            "type": "exact",
-            "value": {
-                "item": {
-                    "name": "Setup Item",
-                    "value": 42
-                }
+            "item": {
+                "name": "Item for retrieval",
+                "value": 42
             }
         }
     },
     {
         "name": "get_item_not_found",
         "method": "GET",
-        "endpoint": "/items/{item_id}",
+        "endpoint": "/items/{id}",
         "request_data": {
             "path": {
-                "item_id": 999
+                "id": 999
             }
         },
         "expected_status": 404,
         "expected_response": {
-            "type": "exact",
-            "value": {
-                "error": "Item not found"
-            }
+            "error": "Item not found"
         }
     },
     {
@@ -154,14 +136,24 @@ TEST_CASES = json.loads('''[
         "setup": [
             {
                 "body": {
-                    "name": "First Item"
+                    "name": "First Item",
+                    "order": 1
                 },
                 "method": "POST",
                 "endpoint": "/items"
             },
             {
                 "body": {
-                    "name": "Second Item"
+                    "name": "Second Item",
+                    "order": 2
+                },
+                "method": "POST",
+                "endpoint": "/items"
+            },
+            {
+                "body": {
+                    "name": "Third Item",
+                    "order": 3
                 },
                 "method": "POST",
                 "endpoint": "/items"
@@ -172,8 +164,20 @@ TEST_CASES = json.loads('''[
         "request_data": {},
         "expected_status": 200,
         "expected_response": {
-            "type": "custom",
-            "validation": "len(response['items']) >= 2"
+            "items": [
+                {
+                    "name": "First Item",
+                    "order": 1
+                },
+                {
+                    "name": "Second Item",
+                    "order": 2
+                },
+                {
+                    "name": "Third Item",
+                    "order": 3
+                }
+            ]
         }
     }
 ]''')
