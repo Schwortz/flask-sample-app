@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-12T12:02:48.631766+00:00
+Generated at: 2026-01-12T12:11:42.843191+00:00
 Project: flask-sample-app
 Milestone: 14362
 """
@@ -57,6 +57,60 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "items": [
+                {
+                    "name": "Test Item",
+                    "description": "A simple test item"
+                },
+                {
+                    "title": "Complex Item",
+                    "content": "This is a complex nested payload",
+                    "metadata": {
+                        "tags": [
+                            "test",
+                            "complex",
+                            "nested"
+                        ],
+                        "stats": {
+                            "likes": 0,
+                            "views": 0
+                        },
+                        "author": "John Doe"
+                    }
+                },
+                {
+                    "name": "Item for retrieval",
+                    "value": 42
+                },
+                {
+                    "name": "Test Product",
+                    "price": 49.99,
+                    "category": "electronics",
+                    "description": "A test product for validation"
+                },
+                {
+                    "tags": [
+                        "electronics",
+                        "computers",
+                        "portable"
+                    ],
+                    "specs": {
+                        "cpu": "Intel i7",
+                        "ram": "16GB",
+                        "storage": "512GB SSD"
+                    },
+                    "product": "Laptop",
+                    "quantity": 10,
+                    "available": true
+                },
+                {
+                    "name": "Smartphone",
+                    "brand": "TestBrand",
+                    "price": 699.99
+                }
+            ]
+        },
         "expected_status": 200
     },
     {
@@ -76,6 +130,9 @@ TEST_CASES = json.loads('''[
             },
             "path": {},
             "query": {}
+        },
+        "actual_response": {
+            "message": "Item added successfully"
         },
         "expected_status": 201
     },
@@ -106,6 +163,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201
     },
     {
@@ -123,6 +183,12 @@ TEST_CASES = json.loads('''[
             },
             "query": {}
         },
+        "actual_response": {
+            "item": {
+                "name": "Test Item",
+                "description": "A simple test item"
+            }
+        },
         "expected_status": 200
     },
     {
@@ -139,6 +205,9 @@ TEST_CASES = json.loads('''[
                 "item_id": 99999
             },
             "query": {}
+        },
+        "actual_response": {
+            "error": "Item not found"
         },
         "expected_status": 404
     }
