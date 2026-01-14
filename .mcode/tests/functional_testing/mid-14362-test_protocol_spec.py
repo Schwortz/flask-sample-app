@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-14T13:03:06.822143+00:00
+Generated at: 2026-01-14T13:10:15.921665+00:00
 Project: flask-sample-app
 Milestone: 14362
 """
@@ -31,9 +31,7 @@ import requests
 TEST_CASES = json.loads('''[
     {
         "name": "get_welcome_happy_path",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/",
         "description": "Verify welcome endpoint returns greeting message",
@@ -42,13 +40,12 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
-        "expected_status": 200
+        "expected_status": 200,
+        "expected_response": "Hello, Flask!"
     },
     {
         "name": "get_all_items_empty",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items",
         "description": "Verify getting all items returns empty list initially",
@@ -57,67 +54,14 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
-        "actual_response": {
-            "items": [
-                {
-                    "name": "Test Item",
-                    "description": "A simple test item"
-                },
-                {
-                    "title": "Complex Item",
-                    "content": "This is a complex nested payload",
-                    "metadata": {
-                        "tags": [
-                            "test",
-                            "complex",
-                            "nested"
-                        ],
-                        "stats": {
-                            "likes": 0,
-                            "views": 0
-                        },
-                        "author": "John Doe"
-                    }
-                },
-                {
-                    "name": "Item for retrieval",
-                    "value": 42
-                },
-                {
-                    "name": "Test Product",
-                    "price": 49.99,
-                    "category": "electronics",
-                    "description": "A test product for validation"
-                },
-                {
-                    "tags": [
-                        "electronics",
-                        "computers",
-                        "portable"
-                    ],
-                    "specs": {
-                        "cpu": "Intel i7",
-                        "ram": "16GB",
-                        "storage": "512GB SSD"
-                    },
-                    "product": "Laptop",
-                    "quantity": 10,
-                    "available": true
-                },
-                {
-                    "name": "Smartphone",
-                    "brand": "TestBrand",
-                    "price": 699.99
-                }
-            ]
-        },
-        "expected_status": 200
+        "expected_status": 200,
+        "expected_response": {
+            "items": []
+        }
     },
     {
         "name": "add_item_happy_path",
-        "setup": null,
         "method": "POST",
-        "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items",
         "description": "Verify adding a new item with valid JSON payload",
@@ -131,48 +75,45 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
-        "actual_response": {
+        "expected_status": 201,
+        "expected_response": {
             "message": "Item added successfully"
-        },
-        "expected_status": 201
+        }
     },
     {
         "name": "add_item_complex_json",
-        "setup": null,
         "method": "POST",
-        "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items",
         "description": "Verify adding item with complex nested JSON structure",
         "request_data": {
             "body": {
-                "tags": [
-                    "electronics",
-                    "computers",
-                    "portable"
-                ],
-                "specs": {
-                    "cpu": "Intel i7",
-                    "ram": "16GB",
-                    "storage": "512GB SSD"
-                },
-                "product": "Laptop",
-                "quantity": 10,
-                "available": true
+                "title": "Complex Item",
+                "content": "This is a complex nested payload",
+                "metadata": {
+                    "tags": [
+                        "test",
+                        "complex",
+                        "nested"
+                    ],
+                    "stats": {
+                        "likes": 0,
+                        "views": 0
+                    },
+                    "author": "John Doe"
+                }
             },
             "path": {},
             "query": {}
         },
-        "actual_response": {
+        "expected_status": 201,
+        "expected_response": {
             "message": "Item added successfully"
-        },
-        "expected_status": 201
+        }
     },
     {
         "name": "get_item_by_id_happy_path",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
         "category": "HAPPY_PATH",
         "endpoint": "/items/{item_id}",
         "description": "Retrieve an item by ID (index) - relies on items created by previous tests",
@@ -183,19 +124,19 @@ TEST_CASES = json.loads('''[
             },
             "query": {}
         },
-        "actual_response": {
+        "expected_status": 200,
+        "expected_response": {
             "item": {
-                "name": "Test Item",
-                "description": "A simple test item"
+                "name": "Test Product",
+                "price": 49.99,
+                "category": "electronics",
+                "description": "A test product for validation"
             }
-        },
-        "expected_status": 200
+        }
     },
     {
         "name": "get_item_not_found",
-        "setup": null,
         "method": "GET",
-        "cleanup": null,
         "category": "NOT_FOUND",
         "endpoint": "/items/{item_id}",
         "description": "Verify 404 response for non-existent item ID",
@@ -206,10 +147,10 @@ TEST_CASES = json.loads('''[
             },
             "query": {}
         },
-        "actual_response": {
+        "expected_status": 404,
+        "expected_response": {
             "error": "Item not found"
-        },
-        "expected_status": 404
+        }
     }
 ]''')
 
