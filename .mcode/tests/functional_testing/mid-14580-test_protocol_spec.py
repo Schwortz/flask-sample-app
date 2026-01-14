@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-14T13:59:54.325601+00:00
+Generated at: 2026-01-14T14:00:50.776739+00:00
 Project: flask-sample-app
 Milestone: 14580
 """
@@ -117,8 +117,7 @@ TEST_CASES = json.loads('''[
                 "testItem": "first"
             },
             "method": "POST",
-            "endpoint": "/items",
-            "extract_id_from": null
+            "endpoint": "/items"
         },
         "method": "GET",
         "cleanup": null,
