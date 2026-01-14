@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-01-14T14:01:58.270304+00:00
+Generated at: 2026-01-14T14:04:59.945434+00:00
 Project: flask-sample-app
 Milestone: 14580
 """
@@ -42,6 +42,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "items": []
+        },
         "expected_status": 200
     },
     {
@@ -60,6 +63,9 @@ TEST_CASES = json.loads('''[
             },
             "path": {},
             "query": {}
+        },
+        "actual_response": {
+            "message": "Item added successfully"
         },
         "expected_status": 201
     },
@@ -92,6 +98,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201
     },
     {
@@ -107,6 +116,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201
     },
     {
@@ -121,6 +133,33 @@ TEST_CASES = json.loads('''[
             "body": null,
             "path": {},
             "query": {}
+        },
+        "actual_response": {
+            "items": [
+                {
+                    "name": "Test Item",
+                    "quantity": 5,
+                    "description": "A simple test item"
+                },
+                {
+                    "tags": [
+                        "electronics",
+                        "computers",
+                        "portable"
+                    ],
+                    "price": 1299.99,
+                    "inStock": true,
+                    "product": {
+                        "name": "Laptop",
+                        "specs": {
+                            "cpu": "Intel i7",
+                            "ram": "16GB",
+                            "storage": "512GB SSD"
+                        }
+                    }
+                },
+                {}
+            ]
         },
         "expected_status": 200
     },
@@ -153,6 +192,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201
     },
     {
@@ -182,6 +224,9 @@ TEST_CASES = json.loads('''[
             "path": {},
             "query": {}
         },
+        "actual_response": {
+            "message": "Item added successfully"
+        },
         "expected_status": 201
     },
     {
@@ -201,6 +246,9 @@ TEST_CASES = json.loads('''[
             },
             "path": {},
             "query": {}
+        },
+        "actual_response": {
+            "message": "Item added successfully"
         },
         "expected_status": 201
     }
