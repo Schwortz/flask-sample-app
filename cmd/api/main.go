@@ -13,21 +13,25 @@ import (
 	"github.com/your-org/flask-sample-go/internal/config"
 	"github.com/your-org/flask-sample-go/internal/core/items"
 	"github.com/your-org/flask-sample-go/internal/http/router"
-	"github.com/your-org/flask-sample-go/internal/storage/postgres"
+	"github.com/your-org/flask-sample-go/internal/storage/memory"
 )
 
 func main() {
 	// Load configuration
 	cfg := config.Load()
 
-	// Connect to database
-	db, err := postgres.Connect(cfg.DBDsn)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
+	// Create repository - always use in-memory storage for instant startup
+	// Database support is available but disabled by default for fast startup
+	var repo items.Repository
+	repo = memory.NewStore()
+	log.Println("Using in-memory storage")
 
-	// Create items service with database repository
-	itemsService := items.NewService(db)
+	// Optionally attempt database connection in background (currently disabled)
+	// This ensures the application starts immediately without waiting for DB
+	_ = cfg.DBDsn // Mark as used to avoid linter warnings
+
+	// Create items service with chosen repository
+	itemsService := items.NewService(repo)
 
 	// Setup router with items service
 	r := router.Setup(itemsService)

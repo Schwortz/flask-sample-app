@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,17 +17,39 @@ type DB struct {
 }
 
 // Connect establishes a connection to PostgreSQL and runs migrations
+// Uses a timeout to avoid blocking the application startup
 func Connect(dsn string) (*DB, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("database DSN is required")
 	}
 
+	// Create a context with timeout for connection attempt
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// Open database with GORM
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
+
+	// Get underlying SQL DB to test connection with timeout
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get database instance: %w", err)
+	}
+
+	// Test the connection with context timeout
+	if err := sqlDB.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	// Set connection pool settings
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(5)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	// Run auto-migration
 	if err := db.AutoMigrate(&Item{}); err != nil {
