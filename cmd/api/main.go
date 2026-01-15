@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/your-org/flask-sample-go/internal/config"
+	"github.com/your-org/flask-sample-go/internal/core/items"
 	"github.com/your-org/flask-sample-go/internal/http/router"
 	"github.com/your-org/flask-sample-go/internal/storage/postgres"
 )
@@ -25,8 +26,11 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Setup router
-	r := router.Setup(db)
+	// Create items service with database repository
+	itemsService := items.NewService(db)
+
+	// Setup router with items service
+	r := router.Setup(itemsService)
 
 	// Create HTTP server
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
