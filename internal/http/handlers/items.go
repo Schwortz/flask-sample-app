@@ -2,29 +2,20 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/your-org/flask-sample-go/internal/core/items"
 )
 
 // GetItems handles GET /items and returns all items
 func (h *Handlers) GetItems(c *gin.Context) {
-	items, err := h.db.FindAllItems()
+	itemList, err := h.itemsService.GetAllItems()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve items"})
 		return
-	}
-
-	// Convert items to []interface{} to match Flask's JSON format
-	itemList := make([]interface{}, len(items))
-	for i, item := range items {
-		var payload interface{}
-		if err := json.Unmarshal(item.Payload, &payload); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse item"})
-			return
-		}
-		itemList[i] = payload
 	}
 
 	c.JSON(http.StatusOK, gin.H{"items": itemList})
@@ -39,36 +30,28 @@ func (h *Handlers) GetItem(c *gin.Context) {
 		return
 	}
 
-	item, err := h.db.FindItemByID(uint(id))
+	item, err := h.itemsService.GetItemByID(uint(id))
 	if err != nil {
+		if errors.Is(err, items.ItemNotFoundError) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve item"})
 		return
 	}
 
-	if item == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Item not found"})
-		return
-	}
-
-	// Parse the payload
-	var payload interface{}
-	if err := json.Unmarshal(item.Payload, &payload); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse item"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"item": payload})
+	c.JSON(http.StatusOK, gin.H{"item": item})
 }
 
-// AddItem handles POST /items and creates a new item
-func (h *Handlers) AddItem(c *gin.Context) {
+// PostItem handles POST /items and creates a new item
+func (h *Handlers) PostItem(c *gin.Context) {
 	var rawPayload json.RawMessage
 	if err := c.ShouldBindJSON(&rawPayload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		return
 	}
 
-	_, err := h.db.CreateItem(rawPayload)
+	err := h.itemsService.CreateItem(rawPayload)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
 		return
