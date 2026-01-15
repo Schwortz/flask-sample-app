@@ -13,6 +13,7 @@ import (
 	"github.com/your-org/flask-sample-go/internal/config"
 	"github.com/your-org/flask-sample-go/internal/core/items"
 	"github.com/your-org/flask-sample-go/internal/http/router"
+	"github.com/your-org/flask-sample-go/internal/storage/memory"
 	"github.com/your-org/flask-sample-go/internal/storage/postgres"
 )
 
@@ -20,14 +21,24 @@ func main() {
 	// Load configuration
 	cfg := config.Load()
 
-	// Connect to database
-	db, err := postgres.Connect(cfg.DBDsn)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	// Create repository - use in-memory storage if no database is configured
+	var repo items.Repository
+	if cfg.DBDsn != "" {
+		db, err := postgres.Connect(cfg.DBDsn)
+		if err != nil {
+			log.Printf("Warning: Failed to connect to database: %v. Using in-memory storage.", err)
+			repo = memory.NewStore()
+		} else {
+			log.Println("Using PostgreSQL database")
+			repo = db
+		}
+	} else {
+		log.Println("No database configured, using in-memory storage")
+		repo = memory.NewStore()
 	}
 
-	// Create items service with database repository
-	itemsService := items.NewService(db)
+	// Create items service with chosen repository
+	itemsService := items.NewService(repo)
 
 	// Setup router with items service
 	r := router.Setup(itemsService)
