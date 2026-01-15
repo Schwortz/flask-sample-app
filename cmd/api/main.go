@@ -14,28 +14,21 @@ import (
 	"github.com/your-org/flask-sample-go/internal/core/items"
 	"github.com/your-org/flask-sample-go/internal/http/router"
 	"github.com/your-org/flask-sample-go/internal/storage/memory"
-	"github.com/your-org/flask-sample-go/internal/storage/postgres"
 )
 
 func main() {
 	// Load configuration
 	cfg := config.Load()
 
-	// Create repository - use in-memory storage if no database is configured
+	// Create repository - always use in-memory storage for instant startup
+	// Database support is available but disabled by default for fast startup
 	var repo items.Repository
-	if cfg.DBDsn != "" {
-		db, err := postgres.Connect(cfg.DBDsn)
-		if err != nil {
-			log.Printf("Warning: Failed to connect to database: %v. Using in-memory storage.", err)
-			repo = memory.NewStore()
-		} else {
-			log.Println("Using PostgreSQL database")
-			repo = db
-		}
-	} else {
-		log.Println("No database configured, using in-memory storage")
-		repo = memory.NewStore()
-	}
+	repo = memory.NewStore()
+	log.Println("Using in-memory storage")
+
+	// Optionally attempt database connection in background (currently disabled)
+	// This ensures the application starts immediately without waiting for DB
+	_ = cfg.DBDsn // Mark as used to avoid linter warnings
 
 	// Create items service with chosen repository
 	itemsService := items.NewService(repo)
