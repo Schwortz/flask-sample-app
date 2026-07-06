@@ -1,14 +1,14 @@
 import logging
 import os
 import platform
-import tempfile
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 
 app = Flask(__name__)
 
-log_dir = tempfile.gettempdir()
+log_dir = os.path.join(os.path.expanduser("~"), ".flask_sample_app")
+os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, "flask_sample_app.log")
 
 file_handler = RotatingFileHandler(log_file, maxBytes=1_048_576, backupCount=5)
