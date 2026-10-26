@@ -8,7 +8,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-app = FastAPI()
+app = FastAPI(redirect_slashes=False)
 
 log_dir = os.path.join(os.path.expanduser("~"), ".flask_sample_app")
 os.makedirs(log_dir, exist_ok=True)
