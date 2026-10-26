@@ -46,7 +46,7 @@ To get the FastAPI app up and running on your local machine, follow these steps:
    python run.py
    ```
 
-   The app will be available at [http://localhost:5001](http://localhost:5000).
+   The app will be available at [http://localhost:5001](http://localhost:5001).
 
 5. **Run Tests:**
 
