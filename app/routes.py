@@ -1,27 +1,32 @@
 # app/routes.py
 
-from app import app
-from flask import request
+from fastapi import APIRouter
+from fastapi.responses import HTMLResponse, JSONResponse
+
+router = APIRouter()
 
 items = []
 
-@app.route('/')
+
+@router.get('/', response_class=HTMLResponse)
 def hello():
     return "Hello, Flask!"
 
-@app.route('/items', methods=['GET'])
+
+@router.get('/items')
 def get_items():
     return {'items': items}
 
-@app.route('/items/<int:item_id>', methods=['GET'])
-def get_item(item_id):
-    if item_id < len(items):
-        return {'item': items[item_id]}
-    else:
-        return {'error': 'Item not found'}, 404
 
-@app.route('/items', methods=['POST'])
-def add_item():
-    item = request.get_json()
+@router.get('/items/{item_id}')
+def get_item(item_id: int):
+    # Flask's int converter never matched negatives; keep them a 404.
+    if 0 <= item_id < len(items):
+        return {'item': items[item_id]}
+    return JSONResponse({'error': 'Item not found'}, status_code=404)
+
+
+@router.post('/items', status_code=201)
+def add_item(item: dict):
     items.append(item)
-    return {'message': 'Item added successfully'}, 201
+    return {'message': 'Item added successfully'}

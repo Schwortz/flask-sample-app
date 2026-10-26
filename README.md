@@ -1,18 +1,18 @@
-# Flask Sample App with Tests
+# FastAPI Sample App with Tests
 
-This is a simple Flask web application with unit tests. The application provides a basic REST API for managing a list of items. It serves as a starting point for learning how to create a Flask application and write tests for it.
+This is a simple FastAPI web application with unit tests. The application provides a basic REST API for managing a list of items. It serves as a starting point for learning how to create a FastAPI application and write tests for it.
 
 ## Project Structure
 
 The project is organized as follows:
 
-- `app/`: Contains the Flask application and routes.
+- `app/`: Contains the FastAPI application and routes.
 - `tests/`: Houses unit tests for the application.
-- `run.py`: A script to run the Flask application.
+- `run.py`: A script to run the FastAPI application.
 
 ## Getting Started
 
-To get the Flask app up and running on your local machine, follow these steps:
+To get the FastAPI app up and running on your local machine, follow these steps:
 
 1. **Clone the Repository:**
 
@@ -40,20 +40,20 @@ To get the Flask app up and running on your local machine, follow these steps:
 
 4. **Run the Application:**
 
-   Start the Flask application:
+   Start the FastAPI application:
 
    ```bash
    python run.py
    ```
 
-   The app will be available at [http://localhost:5000](http://localhost:5000).
+   The app will be available at [http://localhost:5001](http://localhost:5000).
 
 5. **Run Tests:**
 
    To run the unit tests, execute the following command:
 
    ```bash
-   python -m unittest discover tests
+   pytest tests
    ```
 
    This command will discover and run all tests in the `tests` directory.
@@ -85,7 +85,11 @@ Feel free to contribute to this project by opening issues or submitting pull req
 
 ## Acknowledgments
 
-- This project was created as a sample Flask application for educational purposes.
-- Special thanks to the Flask community for providing a fantastic web framework.
+- This project was created as a sample FastAPI application for educational purposes.
+- Special thanks to the FastAPI community for providing a fantastic web framework.
 
-Enjoy experimenting with the Flask sample app! If you have any questions or need further assistance, please don't hesitate to reach out.
+Enjoy experimenting with the FastAPI sample app! If you have any questions or need further assistance, please don't hesitate to reach out.
+
+## Known Test Failure
+
+`tests/test_integration_fail.py` contains an intentionally failing test (`test_that_always_fails`). The integration tests (`tests/test_integration.py`) expect the app to be running on port 5001 (`python run.py`).
