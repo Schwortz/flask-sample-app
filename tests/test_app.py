@@ -13,6 +13,11 @@ class TestAppRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.decode('utf-8'), "Hello, Flask!")
 
+    def test_health_route(self):
+        response = self.app.get('/health')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {'status': 'ok'})
+
     def test_add_item_route(self):
         response = self.app.post('/items', json={"name": "item1"})
         self.assertEqual(response.status_code, 201)
