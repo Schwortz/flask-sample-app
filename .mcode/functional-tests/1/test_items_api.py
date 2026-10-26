@@ -67,3 +67,15 @@ def test_post_invalid_json_422():
     r = requests.post(B + "/items", data="{bad", headers={"Content-Type": "application/json"}, timeout=T)
     assert r.status_code == 422
     assert "error" in r.json()
+
+
+def test_trailing_slash_get_404():
+    r = requests.get(B + "/items/", timeout=T, allow_redirects=False)
+    assert r.status_code == 404
+    assert r.json() == {"error": "Not Found"}
+
+
+def test_trailing_slash_post_404():
+    r = requests.post(B + "/items/", json={"a": 1}, timeout=T, allow_redirects=False)
+    assert r.status_code == 404
+    assert r.json() == {"error": "Not Found"}
