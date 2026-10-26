@@ -1,6 +1,7 @@
 # tests/test_integration.py
 
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 import requests

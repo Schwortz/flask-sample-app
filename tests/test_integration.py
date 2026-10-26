@@ -1,6 +1,7 @@
 # tests/test_integration.py
 
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 import requests
@@ -116,7 +117,7 @@ def test_get_item_by_id_not_found(base_url: str) -> None:
 
 def test_add_multiple_items(base_url: str) -> None:
     """Test adding multiple items and retrieving them."""
-    items_to_add = [
+    items_to_add: list[dict[str, Any]] = [
         {'name': 'item1', 'type': 'test'},
         {'name': 'item2', 'type': 'test', 'value': 10},
         {'name': 'item3', 'type': 'test', 'value': 20}
