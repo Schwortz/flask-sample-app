@@ -5,8 +5,8 @@ from app import app
 
 class TestAppRoutes(unittest.TestCase):
     def setUp(self) -> None:
+        app.testing = True
         self.app = app.test_client()
-        self.app.testing = True
 
     def test_hello_route(self) -> None:
         response = self.app.get('/')
