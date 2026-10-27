@@ -39,5 +39,6 @@ def test_hello_route(base_url):
 
 
 def test_that_always_fails(base_url):
+    """Fail deliberately to exercise failure reporting."""
     assert False
 
