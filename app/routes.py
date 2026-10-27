@@ -9,6 +9,10 @@ items = []
 def hello():
     return "Hello, Flask!"
 
+@app.route('/health')
+def health():
+    return {'status': 'ok'}
+
 @app.route('/items', methods=['GET'])
 def get_items():
     return {'items': items}
