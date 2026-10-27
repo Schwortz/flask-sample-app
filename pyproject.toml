@@ -1,0 +1,3 @@
+[tool.mypy]
+strict = true
+files = ["app", "tests", "run.py", "compile_all.py"]
