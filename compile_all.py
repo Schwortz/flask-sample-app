@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""
-Compile all Python files in the project to check for syntax errors.
+"""Compile all Python files in the project to check for syntax errors.
+
+Exits with status 1 if any file fails to compile, otherwise 0.
 """
 
 import py_compile
@@ -9,9 +10,17 @@ import sys
 from pathlib import Path
 
 
-def compile_python_files(directory):
-    """Recursively compile all Python files in a directory."""
-    errors = []
+def compile_python_files(directory: str) -> tuple[int, list[tuple[str, str]]]:
+    """Recursively compile all Python files in a directory.
+
+    Args:
+        directory: Path of the directory to walk.
+
+    Returns:
+        A tuple of the number of files compiled successfully and a list of
+        ``(file_path, error_message)`` pairs for files that failed.
+    """
+    errors: list[tuple[str, str]] = []
     compiled = 0
     
     for root, dirs, files in os.walk(directory):
@@ -45,7 +54,7 @@ if __name__ == '__main__':
     print("Compiling Python files...\n")
     
     total_compiled = 0
-    all_errors = []
+    all_errors: list[tuple[str, str]] = []
     
     # Compile root-level files
     for file in root_files:

@@ -1,4 +1,5 @@
-# run.py
+"""Entry point that runs the Flask development server."""
+
 import os
 
 from app import app

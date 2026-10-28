@@ -1,3 +1,9 @@
+"""Flask application package.
+
+Creates the shared ``app`` instance, configures rotating file logging in the
+user's home directory, and registers the route handlers.
+"""
+
 import logging
 import os
 import platform
