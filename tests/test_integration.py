@@ -1,4 +1,7 @@
 # tests/test_integration.py
+"""Integration tests run against a live server (port from TEST_PORT, default 5001)."""
+
+from collections.abc import Iterator
 
 import pytest
 import requests
@@ -9,14 +12,21 @@ from app import app
 
 
 @pytest.fixture(scope="session")
-def base_url():
-    """Start the Flask server in a separate thread and return the base URL."""
+def base_url() -> Iterator[str]:
+    """Wait for the running Flask server and provide its base URL.
+
+    Yields:
+        The base URL of the server, e.g. ``http://localhost:5001``.
+
+    Raises:
+        RuntimeError: If the server does not respond with 200 in time.
+    """
     # Use a test port to avoid conflicts
-    test_port = int(os.environ.get("TEST_PORT", 5001))
-    base_url = f"http://localhost:{test_port}"
+    test_port: int = int(os.environ.get("TEST_PORT", 5001))
+    base_url: str = f"http://localhost:{test_port}"
     
     # Wait for server to be ready
-    max_attempts = 4
+    max_attempts: int = 4
     for _ in range(max_attempts):
         try:
             response = requests.get(f"{base_url}/", timeout=1)
@@ -30,16 +40,24 @@ def base_url():
     yield base_url
 
 
-def test_hello_route(base_url):
-    """Test the root endpoint returns correct greeting."""
+def test_hello_route(base_url: str) -> None:
+    """Test the root endpoint returns correct greeting.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.get(f"{base_url}/")
     assert response.status_code == 200
     assert response.text == "Hello, Flask!"
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
-def test_get_items_empty_list(base_url):
-    """Test getting items when list is empty (or after clearing)."""
+def test_get_items_empty_list(base_url: str) -> None:
+    """Test getting items when list is empty (or after clearing).
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
     data = response.json()
@@ -47,8 +65,12 @@ def test_get_items_empty_list(base_url):
     assert isinstance(data['items'], list)
 
 
-def test_add_item_success(base_url):
-    """Test adding an item successfully."""
+def test_add_item_success(base_url: str) -> None:
+    """Test adding an item successfully.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     item_data = {'name': 'test_item', 'description': 'A test item'}
     response = requests.post(
         f"{base_url}/items",
@@ -61,8 +83,12 @@ def test_add_item_success(base_url):
     assert data == {'message': 'Item added successfully'}
 
 
-def test_get_items_after_adding(base_url):
-    """Test getting items after adding one."""
+def test_get_items_after_adding(base_url: str) -> None:
+    """Test getting items after adding one.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     # Add an item
     item_data = {'name': 'integration_test_item', 'value': 42}
     response = requests.post(f"{base_url}/items", json=item_data)
@@ -79,8 +105,12 @@ def test_get_items_after_adding(base_url):
     assert 'integration_test_item' in item_names
 
 
-def test_get_item_by_id_success(base_url):
-    """Test getting an item by valid ID."""
+def test_get_item_by_id_success(base_url: str) -> None:
+    """Test getting an item by valid ID.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     # First, add an item
     item_data = {'name': 'get_by_id_test', 'id': 999}
     response = requests.post(f"{base_url}/items", json=item_data)
@@ -99,8 +129,12 @@ def test_get_item_by_id_success(base_url):
     assert data['item']['name'] == 'get_by_id_test'
 
 
-def test_get_item_by_id_not_found(base_url):
-    """Test getting an item with non-existent ID."""
+def test_get_item_by_id_not_found(base_url: str) -> None:
+    """Test getting an item with non-existent ID.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     # Get current items count
     response = requests.get(f"{base_url}/items")
     items_count = len(response.json()['items'])
@@ -112,8 +146,12 @@ def test_get_item_by_id_not_found(base_url):
     assert data == {'error': 'Item not found'}
 
 
-def test_add_multiple_items(base_url):
-    """Test adding multiple items and retrieving them."""
+def test_add_multiple_items(base_url: str) -> None:
+    """Test adding multiple items and retrieving them.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     items_to_add = [
         {'name': 'item1', 'type': 'test'},
         {'name': 'item2', 'type': 'test', 'value': 10},
@@ -136,8 +174,12 @@ def test_add_multiple_items(base_url):
         assert item['name'] in item_names
 
 
-def test_add_item_with_nested_data(base_url):
-    """Test adding an item with nested data structures."""
+def test_add_item_with_nested_data(base_url: str) -> None:
+    """Test adding an item with nested data structures.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     complex_item = {
         'name': 'complex_item',
         'metadata': {
@@ -164,16 +206,24 @@ def test_add_item_with_nested_data(base_url):
     assert added_item['numbers'] == [1, 2, 3, 4, 5]
 
 
-def test_add_empty_item(base_url):
-    """Test adding an empty item object."""
+def test_add_empty_item(base_url: str) -> None:
+    """Test adding an empty item object.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.post(f"{base_url}/items", json={})
     assert response.status_code == 201
     data = response.json()
     assert data == {'message': 'Item added successfully'}
 
 
-def test_full_workflow(base_url):
-    """Test a complete workflow: add items, get all, get specific."""
+def test_full_workflow(base_url: str) -> None:
+    """Test a complete workflow: add items, get all, get specific.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     # Add first item
     item1 = {'name': 'workflow_item1', 'step': 1}
     response = requests.post(f"{base_url}/items", json=item1)
@@ -212,14 +262,22 @@ def test_full_workflow(base_url):
         assert response.json()['item']['name'] == 'workflow_item2'
 
 
-def test_invalid_route(base_url):
-    """Test accessing a non-existent route."""
+def test_invalid_route(base_url: str) -> None:
+    """Test accessing a non-existent route.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.get(f"{base_url}/nonexistent")
     assert response.status_code == 404
 
 
-def test_get_items_response_format(base_url):
-    """Test that GET /items returns proper JSON format."""
+def test_get_items_response_format(base_url: str) -> None:
+    """Test that GET /items returns proper JSON format.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'application/json'
@@ -230,8 +288,12 @@ def test_get_items_response_format(base_url):
     assert isinstance(data['items'], list)
 
 
-def test_get_item_response_format(base_url):
-    """Test that GET /items/<id> returns proper JSON format."""
+def test_get_item_response_format(base_url: str) -> None:
+    """Test that GET /items/<id> returns proper JSON format.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     # First add an item
     item_data = {'name': 'format_test'}
     requests.post(f"{base_url}/items", json=item_data)
@@ -255,8 +317,12 @@ def test_get_item_response_format(base_url):
         assert 'item' in data
 
 
-def test_post_items_without_json_header(base_url):
-    """Test POST /items with JSON data but explicit header."""
+def test_post_items_without_json_header(base_url: str) -> None:
+    """Test POST /items with JSON data but explicit header.
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     item_data = {'name': 'header_test'}
     response = requests.post(
         f"{base_url}/items",
@@ -266,8 +332,12 @@ def test_post_items_without_json_header(base_url):
     assert response.status_code == 201
 
 
-def test_get_item_negative_id(base_url):
-    """Test getting an item with negative ID (should return 404)."""
+def test_get_item_negative_id(base_url: str) -> None:
+    """Test getting an item with negative ID (should return 404).
+
+    Args:
+        base_url: Base URL of the running server.
+    """
     response = requests.get(f"{base_url}/items/-1")
     # Flask routing will handle this - likely 404
     assert response.status_code in [404, 405]
