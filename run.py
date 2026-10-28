@@ -1,4 +1,8 @@
 # run.py
+# Entry point for the Flask sample app.
+# Run with: python run.py (after: pip install -r requirements.txt)
+# Listens on 0.0.0.0; the port comes from the PORT environment variable
+# and defaults to 5001.
 import os
 
 from app import app
