@@ -5,6 +5,10 @@ from flask import request
 
 items = []
 
+@app.route('/health', methods=['GET'])
+def health():
+    return {'status': 'ok'}, 200
+
 @app.route('/')
 def hello():
     return "Hello, Flask!"
