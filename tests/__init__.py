@@ -1,2 +1,2 @@
-# tests/__init__.py
+"""Test suite for the Flask sample app."""
 

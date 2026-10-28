@@ -1,7 +1,10 @@
-# tests/test_integration.py
+"""Integration tests that exercise a running server over HTTP."""
+
+from collections.abc import Iterator
+from typing import Any
 
 import pytest
-import requests
+import requests  # type: ignore[import-untyped]  # types-requests not in requirements
 import threading
 import time
 import os
@@ -9,8 +12,15 @@ from app import app
 
 
 @pytest.fixture(scope="session")
-def base_url():
-    """Start the Flask server in a separate thread and return the base URL."""
+def base_url() -> Iterator[str]:
+    """Start the Flask server in a separate thread and return the base URL.
+
+    Yields:
+        The base URL of the server under test.
+
+    Raises:
+        RuntimeError: If the server does not respond in time.
+    """
     # Use a test port to avoid conflicts
     test_port = int(os.environ.get("TEST_PORT", 5001))
     base_url = f"http://localhost:{test_port}"
@@ -30,7 +40,7 @@ def base_url():
     yield base_url
 
 
-def test_hello_route(base_url):
+def test_hello_route(base_url: str) -> None:
     """Test the root endpoint returns correct greeting."""
     response = requests.get(f"{base_url}/")
     assert response.status_code == 200
@@ -38,7 +48,7 @@ def test_hello_route(base_url):
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
-def test_get_items_empty_list(base_url):
+def test_get_items_empty_list(base_url: str) -> None:
     """Test getting items when list is empty (or after clearing)."""
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
@@ -47,7 +57,7 @@ def test_get_items_empty_list(base_url):
     assert isinstance(data['items'], list)
 
 
-def test_add_item_success(base_url):
+def test_add_item_success(base_url: str) -> None:
     """Test adding an item successfully."""
     item_data = {'name': 'test_item', 'description': 'A test item'}
     response = requests.post(
@@ -61,7 +71,7 @@ def test_add_item_success(base_url):
     assert data == {'message': 'Item added successfully'}
 
 
-def test_get_items_after_adding(base_url):
+def test_get_items_after_adding(base_url: str) -> None:
     """Test getting items after adding one."""
     # Add an item
     item_data = {'name': 'integration_test_item', 'value': 42}
@@ -79,7 +89,7 @@ def test_get_items_after_adding(base_url):
     assert 'integration_test_item' in item_names
 
 
-def test_get_item_by_id_success(base_url):
+def test_get_item_by_id_success(base_url: str) -> None:
     """Test getting an item by valid ID."""
     # First, add an item
     item_data = {'name': 'get_by_id_test', 'id': 999}
@@ -99,7 +109,7 @@ def test_get_item_by_id_success(base_url):
     assert data['item']['name'] == 'get_by_id_test'
 
 
-def test_get_item_by_id_not_found(base_url):
+def test_get_item_by_id_not_found(base_url: str) -> None:
     """Test getting an item with non-existent ID."""
     # Get current items count
     response = requests.get(f"{base_url}/items")
@@ -112,9 +122,9 @@ def test_get_item_by_id_not_found(base_url):
     assert data == {'error': 'Item not found'}
 
 
-def test_add_multiple_items(base_url):
+def test_add_multiple_items(base_url: str) -> None:
     """Test adding multiple items and retrieving them."""
-    items_to_add = [
+    items_to_add: list[dict[str, Any]] = [
         {'name': 'item1', 'type': 'test'},
         {'name': 'item2', 'type': 'test', 'value': 10},
         {'name': 'item3', 'type': 'test', 'value': 20}
@@ -136,7 +146,7 @@ def test_add_multiple_items(base_url):
         assert item['name'] in item_names
 
 
-def test_add_item_with_nested_data(base_url):
+def test_add_item_with_nested_data(base_url: str) -> None:
     """Test adding an item with nested data structures."""
     complex_item = {
         'name': 'complex_item',
@@ -164,7 +174,7 @@ def test_add_item_with_nested_data(base_url):
     assert added_item['numbers'] == [1, 2, 3, 4, 5]
 
 
-def test_add_empty_item(base_url):
+def test_add_empty_item(base_url: str) -> None:
     """Test adding an empty item object."""
     response = requests.post(f"{base_url}/items", json={})
     assert response.status_code == 201
@@ -172,7 +182,7 @@ def test_add_empty_item(base_url):
     assert data == {'message': 'Item added successfully'}
 
 
-def test_full_workflow(base_url):
+def test_full_workflow(base_url: str) -> None:
     """Test a complete workflow: add items, get all, get specific."""
     # Add first item
     item1 = {'name': 'workflow_item1', 'step': 1}
@@ -212,13 +222,13 @@ def test_full_workflow(base_url):
         assert response.json()['item']['name'] == 'workflow_item2'
 
 
-def test_invalid_route(base_url):
+def test_invalid_route(base_url: str) -> None:
     """Test accessing a non-existent route."""
     response = requests.get(f"{base_url}/nonexistent")
     assert response.status_code == 404
 
 
-def test_get_items_response_format(base_url):
+def test_get_items_response_format(base_url: str) -> None:
     """Test that GET /items returns proper JSON format."""
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
@@ -230,7 +240,7 @@ def test_get_items_response_format(base_url):
     assert isinstance(data['items'], list)
 
 
-def test_get_item_response_format(base_url):
+def test_get_item_response_format(base_url: str) -> None:
     """Test that GET /items/<id> returns proper JSON format."""
     # First add an item
     item_data = {'name': 'format_test'}
@@ -255,7 +265,7 @@ def test_get_item_response_format(base_url):
         assert 'item' in data
 
 
-def test_post_items_without_json_header(base_url):
+def test_post_items_without_json_header(base_url: str) -> None:
     """Test POST /items with JSON data but explicit header."""
     item_data = {'name': 'header_test'}
     response = requests.post(
@@ -266,7 +276,7 @@ def test_post_items_without_json_header(base_url):
     assert response.status_code == 201
 
 
-def test_get_item_negative_id(base_url):
+def test_get_item_negative_id(base_url: str) -> None:
     """Test getting an item with negative ID (should return 404)."""
     response = requests.get(f"{base_url}/items/-1")
     # Flask routing will handle this - likely 404
