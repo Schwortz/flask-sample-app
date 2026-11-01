@@ -27,6 +27,7 @@ class TestAppRoutes(unittest.TestCase):
         response = self.app.get('/items/1')
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.get_json(), {'error': 'Item not found'})
+
     def test_health_route(self) -> None:
         response = self.app.get('/health')
         self.assertEqual(response.status_code, 200)
