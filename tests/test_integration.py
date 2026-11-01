@@ -1,6 +1,7 @@
 # tests/test_integration.py
 
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 import requests
@@ -44,7 +45,7 @@ def test_get_items_empty_list(base_url: str) -> None:
     """Test getting items when list is empty (or after clearing)."""
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert 'items' in data
     assert isinstance(data['items'], list)
 
@@ -59,7 +60,7 @@ def test_add_item_success(base_url: str) -> None:
     )
     
     assert response.status_code == 201
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert data == {'message': 'Item added successfully'}
 
 
@@ -73,7 +74,7 @@ def test_get_items_after_adding(base_url: str) -> None:
     # Get all items
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert 'items' in data
     assert isinstance(data['items'], list)
     # The item should be in the list (may be at the end if other tests ran)
@@ -96,7 +97,7 @@ def test_get_item_by_id_success(base_url: str) -> None:
     # Get item by ID
     response = requests.get(f"{base_url}/items/{item_index}")
     assert response.status_code == 200
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert 'item' in data
     assert data['item']['name'] == 'get_by_id_test'
 
@@ -110,7 +111,7 @@ def test_get_item_by_id_not_found(base_url: str) -> None:
     # Try to get an item that doesn't exist
     response = requests.get(f"{base_url}/items/{items_count + 100}")
     assert response.status_code == 404
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert data == {'error': 'Item not found'}
 
 
@@ -130,7 +131,7 @@ def test_add_multiple_items(base_url: str) -> None:
     # Get all items
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
-    data = response.json()
+    data: dict[str, Any] = response.json()
     
     # Verify all items are present
     item_names = [item.get('name') for item in data['items']]
@@ -170,7 +171,7 @@ def test_add_empty_item(base_url: str) -> None:
     """Test adding an empty item object."""
     response = requests.post(f"{base_url}/items", json={})
     assert response.status_code == 201
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert data == {'message': 'Item added successfully'}
 
 
@@ -189,7 +190,7 @@ def test_full_workflow(base_url: str) -> None:
     # Get all items
     response = requests.get(f"{base_url}/items")
     assert response.status_code == 200
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert 'items' in data
     
     # Find the indices of our items
@@ -226,7 +227,7 @@ def test_get_items_response_format(base_url: str) -> None:
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'application/json'
     
-    data = response.json()
+    data: dict[str, Any] = response.json()
     assert isinstance(data, dict)
     assert 'items' in data
     assert isinstance(data['items'], list)
@@ -252,7 +253,7 @@ def test_get_item_response_format(base_url: str) -> None:
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         
-        data = response.json()
+        data: dict[str, Any] = response.json()
         assert isinstance(data, dict)
         assert 'item' in data
 
