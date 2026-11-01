@@ -67,7 +67,7 @@ python -m venv venv
 source venv/bin/activate  # On Windows, use venv\Scripts\activate
 pip install -r requirements.txt
 
-python run.py                      # serve on http://localhost:5000
+python run.py                      # serve on http://localhost:5001
 python -m unittest discover tests  # run the unit tests
 ```
 
