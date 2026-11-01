@@ -58,6 +58,21 @@ To get the Flask app up and running on your local machine, follow these steps:
 
    This command will discover and run all tests in the `tests` directory.
 
+## Development
+
+Set up a local environment, run the app and run the tests:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows, use venv\Scripts\activate
+pip install -r requirements.txt
+
+python run.py                      # serve on http://localhost:5000
+python -m unittest discover tests  # run the unit tests
+```
+
+`app/routes.py` uses type hints and Google-style docstrings; keep new routes consistent with that style.
+
 ## Application Routes
 
 The application provides the following routes:
