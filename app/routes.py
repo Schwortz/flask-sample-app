@@ -9,11 +9,11 @@ from flask.typing import ResponseReturnValue
 items: list[Any] = []
 
 @app.route('/')
-def hello() -> str:
+def hello() -> ResponseReturnValue:
     return "Hello, Flask!"
 
 @app.route('/items', methods=['GET'])
-def get_items() -> dict[str, list[Any]]:
+def get_items() -> ResponseReturnValue:
     return {'items': items}
 
 @app.route('/items/<int:item_id>', methods=['GET'])
