@@ -1,9 +1,5 @@
-*.pyc
-*.pyo
 .mypy_cache/
 .pytest_cache/
 .venv
-.venv/
 __pycache__
-__pycache__/
 venv/
