@@ -1,5 +1,7 @@
 # tests/test_integration.py
 
+from collections.abc import Iterator
+
 import pytest
 import requests
 import threading
@@ -9,7 +11,7 @@ from app import app
 
 
 @pytest.fixture(scope="session")
-def base_url():
+def base_url() -> Iterator[str]:
     """Start the Flask server in a separate thread and return the base URL."""
     # Use a test port to avoid conflicts
     test_port = int(os.environ.get("TEST_PORT", 5001))
@@ -30,7 +32,7 @@ def base_url():
     yield base_url
 
 
-def test_hello_route(base_url):
+def test_hello_route(base_url: str) -> None:
     """Test the root endpoint returns correct greeting."""
     response = requests.get(f"{base_url}/")
     assert response.status_code == 200
@@ -38,6 +40,6 @@ def test_hello_route(base_url):
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
-def test_that_always_fails(base_url):
+def test_that_always_fails(base_url: str) -> None:
     assert False
 
