@@ -9,9 +9,9 @@ import sys
 from pathlib import Path
 
 
-def compile_python_files(directory):
+def compile_python_files(directory: str) -> tuple[int, list[tuple[str, str]]]:
     """Recursively compile all Python files in a directory."""
-    errors = []
+    errors: list[tuple[str, str]] = []
     compiled = 0
     
     for root, dirs, files in os.walk(directory):
@@ -34,18 +34,18 @@ def compile_python_files(directory):
 
 if __name__ == '__main__':
     # Get project root directory
-    project_root = Path(__file__).parent
+    project_root: Path = Path(__file__).parent
     
     # Directories to compile
-    directories = ['app', 'tests']
+    directories: list[str] = ['app', 'tests']
     
     # Also compile root-level Python files
-    root_files = ['run.py']
+    root_files: list[str] = ['run.py']
     
     print("Compiling Python files...\n")
     
     total_compiled = 0
-    all_errors = []
+    all_errors: list[tuple[str, str]] = []
     
     # Compile root-level files
     for file in root_files:

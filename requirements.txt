@@ -1,3 +1,5 @@
-flask==2.3.3
-requests==2.31.0
-pytest==7.4.3
+flask>=3.0,<4
+requests>=2.32,<2.33
+pytest>=8.0,<9
+mypy>=1.10,<2
+types-requests>=2.32,<2.33

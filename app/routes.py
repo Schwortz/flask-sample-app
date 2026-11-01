@@ -1,27 +1,34 @@
 # app/routes.py
 
+from typing import Any
+
 from app import app
 from flask import request
 
-items = []
+items: list[dict[str, Any]] = []
 
 @app.route('/')
-def hello():
+def hello() -> str:
     return "Hello, Flask!"
 
 @app.route('/items', methods=['GET'])
-def get_items():
+def get_items() -> dict[str, list[dict[str, Any]]]:
     return {'items': items}
 
 @app.route('/items/<int:item_id>', methods=['GET'])
-def get_item(item_id):
+def get_item(item_id: int) -> dict[str, Any] | tuple[dict[str, str], int]:
     if item_id < len(items):
         return {'item': items[item_id]}
     else:
         return {'error': 'Item not found'}, 404
 
 @app.route('/items', methods=['POST'])
-def add_item():
-    item = request.get_json()
+def add_item() -> tuple[dict[str, str], int]:
+    item: dict[str, Any] = request.get_json()
     items.append(item)
     return {'message': 'Item added successfully'}, 201
+
+
+@app.route('/health', methods=['GET'])
+def health() -> dict[str, str]:
+    return {'status': 'ok'}
