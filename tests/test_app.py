@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 
 from app import create_app
 from app.config import Config, TestingConfig
+from tests.conftest import close_app_handlers
 
 
 def test_hello(client: FlaskClient) -> None:
@@ -60,7 +61,7 @@ def test_config_env_overrides(
     assert app.config["PORT"] == 6000
     assert app.config["LOG_DIR"] == str(tmp_path)
     assert app.config["TESTING"] is True
-    _close(app)
+    close_app_handlers(app)
 
 
 def test_default_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -70,7 +71,7 @@ def test_default_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
     app = create_app()
     assert app.config["HOST"] == Config.HOST == "127.0.0.1"
     assert app.config["PORT"] == 5001
-    _close(app)
+    close_app_handlers(app)
 
 
 def test_logging_written_to_log_dir(app: Flask) -> None:
@@ -78,12 +79,6 @@ def test_logging_written_to_log_dir(app: Flask) -> None:
     for handler in app.logger.handlers:
         handler.flush()
     assert "Application starting" in log_file.read_text()
-
-
-def _close(app: Flask) -> None:
-    for handler in list(app.logger.handlers):
-        handler.close()
-        app.logger.removeHandler(handler)
 
 
 def test_create_app_twice_keeps_single_file_handler(
@@ -94,7 +89,7 @@ def test_create_app_twice_keeps_single_file_handler(
     app = create_app(TestingConfig)
     handlers = [h for h in app.logger.handlers if isinstance(h, RotatingFileHandler)]
     assert len(handlers) == 1
-    _close(app)
+    close_app_handlers(app)
 
 
 def test_non_integer_id_not_found(client: FlaskClient) -> None:

@@ -9,15 +9,19 @@ from app import create_app
 from app.config import TestingConfig
 
 
+def close_app_handlers(app: Flask) -> None:
+    """Close and detach every handler on the app logger (it is process-global)."""
+    for handler in list(app.logger.handlers):
+        handler.close()
+        app.logger.removeHandler(handler)
+
+
 @pytest.fixture
 def app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Flask]:
     monkeypatch.setenv("LOG_DIR", str(tmp_path / "logs"))
     flask_app = create_app(TestingConfig)
     yield flask_app
-    for handler in list(flask_app.logger.handlers):
-        if handler.__class__.__name__ == "RotatingFileHandler":
-            handler.close()
-            flask_app.logger.removeHandler(handler)
+    close_app_handlers(flask_app)
 
 
 @pytest.fixture
