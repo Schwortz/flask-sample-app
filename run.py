@@ -1,8 +1,8 @@
-# run.py
-import os
+"""Entry point: python run.py"""
 
-from app import app
+from app import create_app
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5001)) # Default to 5000 if PORT env var is not set
-    app.run(host='0.0.0.0', port=port)
+app = create_app()
+
+if __name__ == "__main__":
+    app.run(host=str(app.config["HOST"]), port=int(app.config["PORT"]))
