@@ -1,3 +1,4 @@
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import pytest
@@ -83,3 +84,14 @@ def _close(app: Flask) -> None:
     for handler in list(app.logger.handlers):
         handler.close()
         app.logger.removeHandler(handler)
+
+
+def test_create_app_twice_keeps_single_file_handler(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("LOG_DIR", str(tmp_path))
+    create_app(TestingConfig)
+    app = create_app(TestingConfig)
+    handlers = [h for h in app.logger.handlers if isinstance(h, RotatingFileHandler)]
+    assert len(handlers) == 1
+    _close(app)

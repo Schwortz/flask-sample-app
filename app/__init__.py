@@ -10,6 +10,7 @@ from flask import Flask
 from app.config import Config, env_overrides
 
 LOG_FILE_NAME = "flask_sample_app.log"
+_HANDLER_MARKER = "_flask_sample_app"
 
 
 def _configure_logging(app: Flask) -> None:
@@ -17,7 +18,14 @@ def _configure_logging(app: Flask) -> None:
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / LOG_FILE_NAME
 
+    # The "app" logger is process-global; replace our previous handler instead of stacking.
+    for existing in list(app.logger.handlers):
+        if getattr(existing, _HANDLER_MARKER, False):
+            app.logger.removeHandler(existing)
+            existing.close()
+
     handler = RotatingFileHandler(log_file, maxBytes=1_048_576, backupCount=5)
+    setattr(handler, _HANDLER_MARKER, True)
     handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s"))
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
