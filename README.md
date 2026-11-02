@@ -8,7 +8,8 @@ The project is organized as follows:
 
 - `app/`: Contains the Flask application and routes.
 - `tests/`: Houses unit tests for the application.
-- `run.py`: A script to run the Flask application.
+- `app/config.py`: Config classes; env overrides `HOST` (default 127.0.0.1), `PORT` (5001), `LOG_DIR` (~/.flask_sample_app).
+- `run.py`: A script to run the Flask application (uses `create_app()`).
 
 ## Getting Started
 
@@ -35,7 +36,7 @@ To get the Flask app up and running on your local machine, follow these steps:
    Install the necessary dependencies using `pip`:
 
    ```bash
-   pip install -r requirements.txt
+   pip install -e .[dev]   # or: pip install -r requirements.txt
    ```
 
 4. **Run the Application:**
@@ -46,7 +47,7 @@ To get the Flask app up and running on your local machine, follow these steps:
    python run.py
    ```
 
-   The app will be available at [http://localhost:5000](http://localhost:5000).
+   The app will be available at [http://localhost:5001](http://localhost:5001).
 
 5. **Run Tests:**
 
@@ -89,3 +90,19 @@ Feel free to contribute to this project by opening issues or submitting pull req
 - Special thanks to the Flask community for providing a fantastic web framework.
 
 Enjoy experimenting with the Flask sample app! If you have any questions or need further assistance, please don't hesitate to reach out.
+
+
+## Quality gate
+
+```bash
+ruff check .
+mypy
+python -m compileall app tests run.py
+pytest          # includes coverage, fails under 90%
+```
+
+## API
+
+- `GET /` - greeting
+- `GET /items`, `POST /items` (JSON body; 400 on invalid JSON)
+- `GET /items/<id>` (404 if missing; 400 for negative ids)
