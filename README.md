@@ -46,7 +46,7 @@ To get the Flask app up and running on your local machine, follow these steps:
    python run.py
    ```
 
-   The app will be available at [http://localhost:5000](http://localhost:5000).
+   The app will be available at [http://localhost:5001](http://localhost:5001). The default port is 5001; set the `PORT` environment variable to override it (e.g. `PORT=8000 python run.py`).
 
 5. **Run Tests:**
 
@@ -60,12 +60,40 @@ To get the Flask app up and running on your local machine, follow these steps:
 
 ## Application Routes
 
-The application provides the following routes:
+The application keeps items in memory (they are lost on restart). Route functions in `app/routes.py` are type-annotated.
 
-- `GET /`: Returns a simple greeting message.
-- `GET /items`: Returns a list of items.
-- `GET /items/{item_id}`: Returns the details of a specific item.
-- `POST /items`: Adds a new item to the list.
+| Route | Method | Status codes | Description |
+|-------|--------|--------------|-------------|
+| `/` | GET | 200 | Returns the plain-text greeting `Hello, Flask!`. |
+| `/items` | GET | 200 | Returns all items. |
+| `/items/<item_id>` | GET | 200, 404 | Returns the item at the zero-based integer index `item_id`, or an error if it does not exist. |
+| `/items` | POST | 201 | Adds the JSON request body as a new item. |
+
+Example bodies:
+
+```bash
+# POST /items  -> 201
+curl -X POST http://localhost:5001/items -H "Content-Type: application/json" -d '{"name": "apple"}'
+# {"message": "Item added successfully"}
+
+# GET /items  -> 200
+# {"items": [{"name": "apple"}]}
+
+# GET /items/0  -> 200
+# {"item": {"name": "apple"}}
+
+# GET /items/5  -> 404
+# {"error": "Item not found"}
+```
+
+### Type checking
+
+Static types can be checked with [mypy](https://mypy-lang.org/), which is an optional dev tool and not in `requirements.txt`:
+
+```bash
+pip install mypy
+mypy app/routes.py
+```
 
 ## Testing
 
