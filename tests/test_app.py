@@ -95,3 +95,13 @@ def test_create_app_twice_keeps_single_file_handler(
     handlers = [h for h in app.logger.handlers if isinstance(h, RotatingFileHandler)]
     assert len(handlers) == 1
     _close(app)
+
+
+def test_non_integer_id_not_found(client: FlaskClient) -> None:
+    assert client.get("/items/abc").status_code == 404
+
+
+def test_json_null_body_accepted(client: FlaskClient) -> None:
+    response = client.post("/items", data="null", content_type="application/json")
+    assert response.status_code == 201
+    assert client.get("/items").get_json() == {"items": [None]}

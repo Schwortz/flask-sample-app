@@ -1,12 +1,15 @@
 """Blueprint with the items REST API."""
 
+import re
 from typing import Any, cast
 
 from flask import Blueprint, current_app, request
 from flask.typing import ResponseReturnValue
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
 bp = Blueprint("main", __name__)
+
+_NEGATIVE_INT = re.compile(r"-[0-9]+")
 
 
 def _items() -> list[Any]:
@@ -15,7 +18,7 @@ def _items() -> list[Any]:
 
 @bp.errorhandler(BadRequest)
 def handle_bad_request(error: BadRequest) -> ResponseReturnValue:
-    return {"error": "Invalid JSON body"}, 400
+    return {"error": error.description or "Bad request"}, 400
 
 
 @bp.route("/")
@@ -38,14 +41,16 @@ def get_item(item_id: int) -> ResponseReturnValue:
 
 @bp.route("/items/<item_id>", methods=["GET"])
 def get_item_invalid(item_id: str) -> ResponseReturnValue:
-    """Negative or non-integer ids (the int converter rejects them)."""
-    return {"error": "Invalid item id"}, 400
+    """Negative ids are rejected with 400; other non-int ids stay 404 as in origin."""
+    if _NEGATIVE_INT.fullmatch(item_id):
+        return {"error": "Invalid item id"}, 400
+    raise NotFound()
 
 
 @bp.route("/items", methods=["POST"])
 def add_item() -> ResponseReturnValue:
-    item = request.get_json(silent=True)
-    if item is None:
+    if not request.is_json:
         raise BadRequest("Invalid JSON body")
+    item = request.get_json()
     _items().append(item)
     return {"message": "Item added successfully"}, 201
