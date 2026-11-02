@@ -51,6 +51,9 @@ def get_item_invalid(item_id: str) -> ResponseReturnValue:
 def add_item() -> ResponseReturnValue:
     if not request.is_json:
         raise BadRequest("Invalid JSON body")
-    item = request.get_json()
+    try:
+        item = request.get_json()
+    except BadRequest as exc:
+        raise BadRequest("Invalid JSON body") from exc
     _items().append(item)
     return {"message": "Item added successfully"}, 201
